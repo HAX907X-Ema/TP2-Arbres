@@ -2,7 +2,7 @@
 
 **Autrice:** Ema Cerezo
 
-Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. Il s'agit d'un TP visant à se familiariser avec les `DecisionTreeClassifier` de la librairie Python `scikit-learn`. Il contient deux fichiers principaux : Un script report.qmd dans lequel j'ai répondu aux questions du TP et un compte-rendu report.html (qui est l'output du fichier .qmd).
+Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. Il s'agit d'un TP visant à se familiariser avec les `DecisionTreeClassifier` de la librairie Python `scikit-learn`. Il contient deux fichiers principaux : Un script report.qmd dans lequel j'ai répondu aux questions du TP et un compte-rendu report.html (qui est l'output du fichier .qmd). L'ensemble des fichiers destinés à l'utilisateur final (comme les graphiques exportés) se situent dans le dossier `dist`.
 
 ## Bien démarrer
 
