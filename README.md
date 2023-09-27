@@ -7,15 +7,15 @@ Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. 
 ## Bien démarrer
 
 1. Assurez-vous que Python, Graphviz et Quarto soient bien installés sur votre ordinateur.
-2. Ouvrez un terminal à la racine du projet et installez les librairies via la commande :
+2. Selon votre système d'exploitation, suivez les étapes ci-dessous :
+
+### Windows
+
+Ouvrez un terminal à la racine du projet et installez les librairies via la commande :
 
 ```
 pip install requirements.txt
 ```
-   
-3. Selon votre système d'exploitation, suivez les étapes ci-dessous :
-
-### Windows
 
 Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécutez la commande suivante dans votre terminal à la racine du projet :
 
@@ -28,6 +28,15 @@ Vous trouverez le fichier report.html dans le dossier `dist` du projet.
 Si vous souhaitez lire le script report.qmd, celui-ci se situe dans le dossier `report` du projet.
 
 ### Linux / MacOS
+
+Ouvrez un terminal à la racine du projet exécutez les commandes suivantes :
+
+```
+pip3 install virtualenv
+python3 -m virtualenv venv
+source venv/bin/activate
+pip3 install requirements.txt
+```
 
 Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécutez la commande suivante dans votre terminal à la racine du projet :
 
