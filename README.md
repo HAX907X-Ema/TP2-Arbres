@@ -14,7 +14,7 @@ Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. 
 Ouvrez un terminal à la racine du projet et installez les librairies via la commande :
 
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécutez la commande suivante :
