@@ -17,7 +17,7 @@ Ouvrez un terminal à la racine du projet et installez les librairies via la com
 pip install requirements.txt
 ```
 
-Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécutez la commande suivante dans votre terminal à la racine du projet :
+Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécutez la commande suivante :
 
 ```
 execute
@@ -38,7 +38,7 @@ source venv/bin/activate
 pip3 install requirements.txt
 ```
 
-Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécutez la commande suivante dans votre terminal à la racine du projet :
+Exécutez ensuite la commande suivante pour générer le compte-rendu au format .html à partir du fichier .qmd :
 
 ```
 ./execute.sh
