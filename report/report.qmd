@@ -8,6 +8,7 @@ format:
       toc: true
       toc-title: Table des matières
       toc-location: left
+      smooth-scroll: true
 theme: flatly
 execute:
   cache: true
@@ -19,7 +20,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import graphviz
 import os
-from sklearn import tree, datasets, model_selection
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split, cross_val_score, learning_curve, LearningCurveDisplay, ShuffleSplit
 
 from src.sample_generation import rand_checkers
 from src.display import frontiere, plot_2d
@@ -98,13 +101,12 @@ scores_gini = np.zeros(max_depth)
 clf_entropy = []  # (<- pour des raisons d'affichage, et parce qu'on va les)
 clf_gini = []     # (réutiliser question 5.)
 for i in range(max_depth):
-    clf_entropy.append(tree.DecisionTreeClassifier(criterion="entropy", 
-    max_depth=i + 1))
+    clf_entropy.append(DecisionTreeClassifier(criterion="entropy", 
+                                              max_depth=i + 1))
     clf_entropy[i].fit(X_train, Y_train)
     scores_entropy[i] = clf_entropy[i].score(X_train, Y_train)  # Calcul du score
     
-    clf_gini.append(tree.DecisionTreeClassifier(criterion="gini", 
-    max_depth=i + 1))
+    clf_gini.append(DecisionTreeClassifier(criterion="gini", max_depth=i + 1))
     clf_gini[i].fit(X_train, Y_train)
     scores_gini[i] = clf_gini[i].score(X_train, Y_train)
 ```
@@ -201,7 +203,7 @@ plt.show()
 On exporte l'arbre maximal au format pdf.
 
 ```{python}
-entropy_tree_graphviz = tree.export_graphviz(clf_entropy[11], out_file=None,
+entropy_tree_graphviz = export_graphviz(clf_entropy[11], out_file=None,
                                              filled=True, rounded=True, 
                                              special_characters=True) 
 graph = graphviz.Source(entropy_tree_graphviz)
@@ -305,7 +307,7 @@ stockés sous forme de matrices :
 
 ```{python}
 #|echo: false
-digits = datasets.load_digits()
+digits = load_digits()
 _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
 for ax, image, label in zip(axes, digits.images, digits.target):
     ax.set_axis_off()
@@ -321,7 +323,7 @@ de test.
 ```{python}
 n_samples = len(digits.images)
 data = digits.images.reshape((n_samples, -1))
-X_train, X_test, Y_train, Y_test = model_selection.train_test_split(
+X_train, X_test, Y_train, Y_test = train_test_split(
     data, digits.target, test_size=0.2, shuffle=False
 )
 
@@ -331,8 +333,8 @@ scores_entropy_test = np.zeros(max_depth)
 scores_gini_test = np.zeros(max_depth)
 
 for i in range(max_depth):
-    clf_entropy = tree.DecisionTreeClassifier(criterion="entropy", max_depth=i + 1)
-    clf_gini = tree.DecisionTreeClassifier(criterion="gini", max_depth=i + 1)
+    clf_entropy = DecisionTreeClassifier(criterion="entropy", max_depth=i + 1)
+    clf_gini = DecisionTreeClassifier(criterion="gini", max_depth=i + 1)
     
     clf_entropy.fit(X_train, Y_train)
     clf_gini.fit(X_train, Y_train)
@@ -374,20 +376,21 @@ de précision pour les données de test. Les courbes suggèrent également
 qu'une valeur de profondeur d'arbre de 6 ou 7 suffit pour classer 
 efficacement les données.
 
-On enregistre l'arbre obtenu pour `max_depth = 6=7` (L'arbre qui minimise 
+On enregistre l'arbre obtenu pour `max_depth=7` (L'arbre qui minimise 
 l'erreur pour l'échantillon d'entraînement est celui de profondeur 12, mais 
 il peut être intéressant d'observer celui qui la minimise pour 
 l'échantillon de test pour cette fois).
 
 ```{python}
 #|echo: false
-clf_entropy = tree.DecisionTreeClassifier(criterion="entropy", max_depth=7)
+clf_entropy = DecisionTreeClassifier(criterion="entropy", max_depth=7)
 clf_entropy.fit(X_train, Y_train)
-entropy_tree_graphviz = tree.export_graphviz(clf_entropy, out_file=None,
-                                             filled=True, rounded=True, 
-                                             special_characters=True) 
+entropy_tree_graphviz = export_graphviz(clf_entropy, out_file=None,
+                                        filled=True, rounded=True, 
+                                        special_characters=True) 
 graph = graphviz.Source(entropy_tree_graphviz)
 output_file = graph.render(os.path.join("..", "dist", "digits_max_depth_7"))
+os.remove(os.path.join("..", "dist", "digits_max_depth_7"))
 ```
 
 Il est enregistré dans le dossier dist.
@@ -395,3 +398,78 @@ Il est enregistré dans le dossier dist.
 ## Méthodes de choix de paramètres - Sélection de modèle
 
 ### Question 7
+
+On estime la profondeur d'arbre optimale par validation croisée : 
+On choisit N = 5 pour la partition de l'ensemble d'apprentissage, puis on 
+détermine la profondeur d'arbre pour laquelle le score de validation 
+croisée est le meilleur grâce à la fonction `cross_val_score` de `sklearn.
+model_selection`.
+
+```{python}
+N = 5 
+max_score = 0
+
+for depth in range(1, max_depth + 1):
+    clf_entropy = DecisionTreeClassifier(criterion="entropy", max_depth=depth)
+    score = np.mean(cross_val_score(clf_entropy, X_train, Y_train, cv=N))
+    if score > max_score:
+        optimal_depth = depth
+        max_score = score
+
+print(f'Profondeur optimale : {optimal_depth}')
+```
+
+### Question 8
+
+Affichons les courbes d'apprentissage pour des profondeurs d'arbres allant 
+de 1 à 12. 
+
+On commence par charger les données et créer le plot. Ensuite, pour chaque 
+valeur de max_depth et sur l'axe adapté, on utilise la fonction 
+`LearningCurveDisplay` de `sklearn.model_selection` pour afficher la courbe 
+d'apprentissage de l'arbre correspondant. Celle-ci nous informe sur la 
+qualité du modèle obtenu selon la taille de l'échantillon d'entraînement.
+
+```{python}
+X, y = load_digits(return_X_y=True)
+fig, axes = plt.subplots(nrows=3, ncols=4, figsize=(12, 8), sharex=True, 
+sharey=True)
+
+for depth, ax in zip(range(1, max_depth + 1), axes.ravel()):
+    clf_entropy = DecisionTreeClassifier(criterion="entropy", max_depth=depth)
+    train_sizes, train_scores, test_scores = learning_curve(clf_entropy, X, y, train_sizes=np.linspace(0.1, 1.0, 5), cv=N)
+    
+    common_params = {
+        "X": X,
+        "y": y,
+        "train_sizes": np.linspace(0.1, 1.0, 5),
+        "cv": ShuffleSplit(n_splits=50, test_size=0.2, random_state=0),
+        "score_type": "both",
+        "n_jobs": 4,
+        "line_kw": {"marker": "o"},
+        "std_display_style": "fill_between",
+        "score_name": "Précision",
+        "ax": ax
+    }
+    
+    LearningCurveDisplay.from_estimator(clf_entropy, **common_params)
+    ax.set_title(f"max_depth={depth}")
+    ax.legend(loc='best')
+
+plt.tight_layout()
+plt.show()
+```
+
+On constate ici que plus les données de l'échantillon d'entraînement sont 
+nombreuses, plus la classification est efficace. Cependant, la précision 
+n'augmente pas énormément au-delà de 750 éléments, on en déduit donc 
+qu'il serait possible de limiter l'entraînement à 50% du jeu de données 
+sans que cela n'ait trop d'impact sur la précision du classifier. Néanmoins,
+une taille d'échantillon d'entraînement légèrement plus importante est 
+toujours bonne à prendre (si possible), tant que cela ne rend pas les 
+calculs trop longs.
+
+On remarque également encore une fois que les données ne sont pas 
+bien classées par des arbres dont la profondeur est inférieure à 6, et 
+qu'il est peu pertinent de choisir une profondeur d'arbre supérieure à 8 
+(les graphiques sont les mêmes). 
