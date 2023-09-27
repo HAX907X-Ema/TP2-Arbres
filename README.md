@@ -2,7 +2,7 @@
 
 **Autrice:** Ema Cerezo
 
-Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. Il s'agit d'un TP visant à se familiariser avec les `DecisionTreeClassifier` de la librairie Python `scikit-learn`. Il contient deux fichiers principaux : Un script .qmd dans lequel j'ai répondu aux questions du TP et un compte-rendu au format .html (qui est l'output du fichier .qmd).
+Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. Il s'agit d'un TP visant à se familiariser avec les `DecisionTreeClassifier` de la librairie Python `scikit-learn`. Il contient deux fichiers principaux : Un script report.qmd dans lequel j'ai répondu aux questions du TP et un compte-rendu report.html (qui est l'output du fichier .qmd).
 
 ## Bien démarrer
 
@@ -23,9 +23,9 @@ Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécu
 execute
 ```
 
-Vous trouverez le fichier .html dans le dossier `dist` du projet. 
+Vous trouverez le fichier report.html dans le dossier `dist` du projet. 
 
-Si vous souhaitez lire le script .qmd, celui-ci se situe dans le dossier `report` du projet.
+Si vous souhaitez lire le script report.qmd, celui-ci se situe dans le dossier `report` du projet.
 
 ### Linux 
 
@@ -35,9 +35,9 @@ Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécu
 ./execute.sh
 ```
 
-Vous trouverez le fichier .html dans le dossier `dist` du projet. 
+Vous trouverez le fichier report.html dans le dossier `dist` du projet. 
 
-Si vous souhaitez lire le script .qmd, celui-ci se situe dans le dossier `report` du projet.
+Si vous souhaitez lire le script report.qmd, celui-ci se situe dans le dossier `report` du projet.
 
 
 ## Réferences
