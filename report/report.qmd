@@ -3,11 +3,15 @@ title: "TP2 : Arbres"
 author:
     - Ema Cerezo
 date: today
+project:
+    type: website
+    output-dir: dist
 format: 
     html:
       toc: true
       toc-title: Table des matières
       toc-location: left
+      embed-resources: true
       smooth-scroll: true
 theme: flatly
 execute:
@@ -433,7 +437,7 @@ qualité du modèle obtenu selon la taille de l'échantillon d'entraînement.
 ```{python}
 X, y = load_digits(return_X_y=True)
 fig, axes = plt.subplots(nrows=3, ncols=4, figsize=(12, 8), sharex=True, 
-sharey=True)
+                         sharey=True)
 
 for depth, ax in zip(range(1, max_depth + 1), axes.ravel()):
     clf_entropy = DecisionTreeClassifier(criterion="entropy", max_depth=depth)
