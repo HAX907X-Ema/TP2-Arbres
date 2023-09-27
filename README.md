@@ -35,7 +35,7 @@ Ouvrez un terminal à la racine du projet et exécutez les commandes suivantes :
 pip3 install virtualenv
 python3 -m virtualenv venv
 source venv/bin/activate
-pip3 install requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Exécutez ensuite la commande suivante pour générer le compte-rendu au format .html à partir du fichier .qmd :
