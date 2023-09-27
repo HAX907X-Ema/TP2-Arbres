@@ -6,7 +6,7 @@ Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. 
 
 ## Bien démarrer
 
-1. Assurez-vous que Python et Quarto soient bien installés sur votre ordinateur.
+1. Assurez-vous que Python, Graphviz et Quarto soient bien installés sur votre ordinateur.
 2. Ouvrez un terminal à la racine du projet et installez les librairies via la commande :
 
 ```
