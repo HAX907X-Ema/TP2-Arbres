@@ -27,7 +27,7 @@ Vous trouverez le fichier report.html dans le dossier `dist` du projet.
 
 Si vous souhaitez lire le script report.qmd, celui-ci se situe dans le dossier `report` du projet.
 
-### Linux 
+### Linux / MacOS
 
 Pour générer le compte-rendu au format .html à partir du fichier .qmd, exécutez la commande suivante dans votre terminal à la racine du projet :
 
