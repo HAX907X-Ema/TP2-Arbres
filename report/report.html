@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ema Cerezo">
+<meta name="dcterms.date" content="2023-09-27">
+
+<title>TP2 : Arbres</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="report_files/libs/quarto-html/quarto.js"></script>
+<script src="report_files/libs/quarto-html/popper.min.js"></script>
+<script src="report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table des matières</h2>
+   
+  <ul>
+  <li><a href="#classification-avec-les-arbres" id="toc-classification-avec-les-arbres" class="nav-link active" data-scroll-target="#classification-avec-les-arbres">Classification avec les arbres</a>
+  <ul class="collapse">
+  <li><a href="#question-1" id="toc-question-1" class="nav-link" data-scroll-target="#question-1">Question 1</a></li>
+  <li><a href="#question-2" id="toc-question-2" class="nav-link" data-scroll-target="#question-2">Question 2</a></li>
+  <li><a href="#question-3" id="toc-question-3" class="nav-link" data-scroll-target="#question-3">Question 3</a></li>
+  <li><a href="#question-4" id="toc-question-4" class="nav-link" data-scroll-target="#question-4">Question 4</a></li>
+  <li><a href="#question-5" id="toc-question-5" class="nav-link" data-scroll-target="#question-5">Question 5</a></li>
+  <li><a href="#question-6" id="toc-question-6" class="nav-link" data-scroll-target="#question-6">Question 6</a></li>
+  </ul></li>
+  <li><a href="#méthodes-de-choix-de-paramètres---sélection-de-modèle" id="toc-méthodes-de-choix-de-paramètres---sélection-de-modèle" class="nav-link" data-scroll-target="#méthodes-de-choix-de-paramètres---sélection-de-modèle">Méthodes de choix de paramètres - Sélection de modèle</a>
+  <ul class="collapse">
+  <li><a href="#question-7" id="toc-question-7" class="nav-link" data-scroll-target="#question-7">Question 7</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">TP2 : Arbres</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ema Cerezo </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 27, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="classification-avec-les-arbres" class="level2">
+<h2 class="anchored" data-anchor-id="classification-avec-les-arbres">Classification avec les arbres</h2>
+<section id="question-1" class="level3">
+<h3 class="anchored" data-anchor-id="question-1">Question 1</h3>
+<p>Dans le cadre de la régression, on cherche à prédire une valeur numérique pour Y, c’est-à-dire une valeur continue. Cela diffère de la prédiction d’une classe, qui correspond à une valeur discrète (ex: couleur des yeux, diagnostic médical…).</p>
+<p>Ainsi, les mesures d’impureté comme l’indice de Gini ou l’entropie ne sont pas pertinentes pour la classification : Il faut choisir une autre mesure d’homogénéité. On pourrait par exemple utiliser la variance, qui permettrait de s’assurer que les données soient bien regroupées.</p>
+</section>
+<section id="question-2" class="level3">
+<h3 class="anchored" data-anchor-id="question-2">Question 2</h3>
+<p>On souhaite comparer les pourcentages d’erreurs commises selon la profondeur maximale d’un arbre pour les mesures d’impureté suivantes :</p>
+<ul>
+<li>Indice de Gini</li>
+<li>Entropie</li>
+</ul>
+<p>Pour ce faire, on procède de la manière suivante :</p>
+<ol type="1">
+<li><p>Simulation de deux échantillons de données de taille n = 456, grâce à la méthode <code>rand_checkers</code>, pour obtenir un ensemble de points aléatoires.</p></li>
+<li><p>Pour chaque mesure d’impureté, construction de 12 arbres de décision et classification des données avec le package <code>tree</code> de <code>scikit-learn</code> (en faisant varier le paramètre <code>max_depth</code> de <code>tree.DecisionTreeClassifier</code> entre 1 et 12).</p></li>
+<li><p>Attribution d’un score à chaque résultat obtenu.</p></li>
+<li><p>Construction de deux courbes à analyser : Une pour l’indice de Gini et une pour l’entropie.</p></li>
+</ol>
+<p><strong>1. Génération des échantillons</strong></p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Génération des échantillons</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">114</span>  <span class="co"># 456 = 114 * 4</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data_raw <span class="op">=</span> rand_checkers(n, n, n, n)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> data_raw[:, :<span class="dv">2</span>]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Y_train <span class="op">=</span> data_raw[:, <span class="dv">2</span>].astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-4-output-1.png" width="446" height="384"></p>
+</div>
+</div>
+<p><strong>2. 3. Instanciation des classifiers, entraînement et calcul des scores</strong></p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Instanciation et entraînement des classifiers</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>max_depth <span class="op">=</span> <span class="dv">12</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>scores_entropy <span class="op">=</span> np.zeros(max_depth)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>scores_gini <span class="op">=</span> np.zeros(max_depth)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>clf_entropy <span class="op">=</span> []  <span class="co"># (&lt;- pour des raisons d'affichage, et parce qu'on va les)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>clf_gini <span class="op">=</span> []     <span class="co"># (réutiliser question 5.)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(max_depth):</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    clf_entropy.append(tree.DecisionTreeClassifier(criterion<span class="op">=</span><span class="st">"entropy"</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    max_depth<span class="op">=</span>i <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    clf_entropy[i].fit(X_train, Y_train)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    scores_entropy[i] <span class="op">=</span> clf_entropy[i].score(X_train, Y_train)  <span class="co"># Calcul du score</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    clf_gini.append(tree.DecisionTreeClassifier(criterion<span class="op">=</span><span class="st">"gini"</span>, </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    max_depth<span class="op">=</span>i <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    clf_gini[i].fit(X_train, Y_train)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    scores_gini[i] <span class="op">=</span> clf_gini[i].score(X_train, Y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Voici les classes obtenues pour les valeurs 1 à 12 du paramètre <code>max_depth</code> pour <code>DecisionTreeClassifier(criterion="entropy")</code> :</p>
+<div class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-6-output-1.png" width="546" height="402"></p>
+</div>
+</div>
+<p>On constate qu’une profondeur d’arbre trop petite ne permet pas de distinguer des classes pertinentes dans l’échantillon <em>(max_depth = 1 à 5)</em>, tandis qu’une profondeur d’arbre trop grande semble capturer du bruit en plus de l’information de l’échantillon <em>(max_depth = 8 à 12)</em> (surapprentissage).</p>
+<p><strong>4. Courbes de score</strong></p>
+<p>Le score donne la proportion de prédictions correctement réalisées par le classifier. Ainsi, plus le score est petit, plus le pourcentage d’erreur est grand.</p>
+<p>Les scores calculés précédemment donnent les courbes suivantes :</p>
+<div class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-7-output-1.png" width="590" height="429"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="cell-output cell-output-stdout">
+<pre><code>Score entropy pour max_depth = 5 : 0.6227678571428571
+Score entropy pour max_depth = 7 : 0.8973214285714286
+Score entropy pour max_depth = 8 : 0.96875
+Score entropy pour max_depth = 10 : 0.9933035714285714
+Score entropy pour max_depth = 12 : 1.0</code></pre>
+</div>
+</div>
+<p>Comme constaté précédemment, on remarque que pour une profondeur d’arbre inférieure ou égale à 5, la prédiction est peu fiable (environ une chance sur deux ou moins). Au-dessus de 8, la prédiction est précise à 95%. On remarque aussi que pour <code>max_depth = 12</code>, la prédiction est fiable à 100%, ce qui signifie que tout le bruit a été capturé par le modèle. Cela confirme donc notre hypothèse de surapprentissage pour une valeur trop élevée de profondeur d’arbre.</p>
+<p>Les mesures d’impureté d’entropie et de Gini donnent des résultats similaires.</p>
+</section>
+<section id="question-3" class="level3">
+<h3 class="anchored" data-anchor-id="question-3">Question 3</h3>
+<p>La profondeur qui minimise le pourcentage d’erreurs est celle qui a obtenu le score maximal :</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>score_max, indice_max <span class="op">=</span> scores_entropy[<span class="dv">0</span>], <span class="dv">0</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, score <span class="kw">in</span> <span class="bu">enumerate</span>(scores_entropy):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> score <span class="op">&gt;</span> score_max:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        score_max <span class="op">=</span> score</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        indice_max <span class="op">=</span> i</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>         </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Score entropy pour max_depth = </span><span class="sc">{</span>indice_max <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> : </span><span class="sc">{</span>score_max<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Score entropy pour max_depth = 12 : 1.0</code></pre>
+</div>
+</div>
+<p>Soit donc <code>max_depth = 12</code> (on le remarque également question précédente).</p>
+<p>La classification associée est la suivante :</p>
+<div class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-10-output-1.png" width="463" height="417"></p>
+</div>
+</div>
+</section>
+<section id="question-4" class="level3">
+<h3 class="anchored" data-anchor-id="question-4">Question 4</h3>
+<p>On exporte l’arbre maximal au format pdf.</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>entropy_tree_graphviz <span class="op">=</span> tree.export_graphviz(clf_entropy[<span class="dv">11</span>], out_file<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                                             filled<span class="op">=</span><span class="va">True</span>, rounded<span class="op">=</span><span class="va">True</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                                             special_characters<span class="op">=</span><span class="va">True</span>) </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>graph <span class="op">=</span> graphviz.Source(entropy_tree_graphviz)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>output_file <span class="op">=</span> graph.render(os.path.join(<span class="st">".."</span>, <span class="st">"dist"</span>, <span class="st">"entropy_max_tree"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>On obtient la représentation graphique de l’arbre avec ses règles de décision.</p>
+</section>
+<section id="question-5" class="level3">
+<h3 class="anchored" data-anchor-id="question-5">Question 5</h3>
+<p>On génère un nouvel échantillon de taille <span class="math inline">\(n = 160 = 40 + 40 + 40 + 40\)</span> avec la méthode <code>rand_checkers</code>, et on tente d’en classifier les données avec les arbres entraînés précédemment pour des profondeurs d’arbres maximales allant de 1 à 12 (par entropie et par indice de gini). On calcule ensuite les scores obtenus pour les 2 * 12 classifications, et on trace deux courbes pour comparer ces résultats à ceux obtenus auparavant.</p>
+<div class="cell" data-execution_count="13">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-13-output-1.png" width="590" height="450"></p>
+</div>
+</div>
+<p>Précédemment, on a constaté qu’une profondeur d’arbre maximale inférieure ou égale à 5 ne permettait pas de classer correctement les données. Ici, on constate qu’au dela de 6, la classification ne s’améliore plus en augmentant la profondeur d’arbre, quel que soit le critère d’impureté (son score de précision stagne aux alentours de 80%). On en déduit qu’une profondeur d’arbre supérieure à 6 n’est pas pertinente pour la classification de ces données (surapprentissage).</p>
+<p>On remarque également que contrairement à la classification réalisée sur l’échantillon d’entraînement, celle réalisée sur l’échantillon de test n’arrive jamais à un score de 100% de précision quelle que soit la profondeur d’arbre maximale (ce qui semble cohérent puisque le score est calculé à partir d’une prédiction réalisée automatiquement sur les données d’entrée).</p>
+<p>Voici les classes obtenues pour le critère d’entropie :</p>
+<div class="cell" data-execution_count="14">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-14-output-1.png" width="546" height="404"></p>
+</div>
+</div>
+<p>En particulier, voici celles obtenues pour <code>max_depth = 6</code> :</p>
+<div class="cell" data-execution_count="15">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-15-output-1.png" width="453" height="417"></p>
+</div>
+</div>
+<p>La prédiction semble plutôt juste.</p>
+</section>
+<section id="question-6" class="level3">
+<h3 class="anchored" data-anchor-id="question-6">Question 6</h3>
+<p>Il s’agit maintenant de reprendre les questions précédentes pour un jeu de données réelles et non plus simulées. On commence par charger le jeu de données.</p>
+<p>Il s’agit d’images de 8x8 pixels représentant des chiffres en noir et blanc, stockés sous forme de matrices :</p>
+<div class="cell" data-execution_count="16">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-16-output-1.png" width="763" height="201"></p>
+</div>
+</div>
+<p>On entraîne des classifiers sur une partie des données du dataset (80% des données) et on teste les classifiers sur les 20% restants. On trace ensuite les courbes de score pour les données d’entraînement, et pour les données de test.</p>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="bu">len</span>(digits.images)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> digits.images.reshape((n_samples, <span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>X_train, X_test, Y_train, Y_test <span class="op">=</span> model_selection.train_test_split(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    data, digits.target, test_size<span class="op">=</span><span class="fl">0.2</span>, shuffle<span class="op">=</span><span class="va">False</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>scores_entropy_train <span class="op">=</span> np.zeros(max_depth)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>scores_gini_train <span class="op">=</span> np.zeros(max_depth)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>scores_entropy_test <span class="op">=</span> np.zeros(max_depth)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>scores_gini_test <span class="op">=</span> np.zeros(max_depth)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(max_depth):</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    clf_entropy <span class="op">=</span> tree.DecisionTreeClassifier(criterion<span class="op">=</span><span class="st">"entropy"</span>, max_depth<span class="op">=</span>i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    clf_gini <span class="op">=</span> tree.DecisionTreeClassifier(criterion<span class="op">=</span><span class="st">"gini"</span>, max_depth<span class="op">=</span>i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    clf_entropy.fit(X_train, Y_train)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    clf_gini.fit(X_train, Y_train)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    scores_entropy_train[i] <span class="op">=</span> clf_entropy.score(X_train, Y_train)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    scores_gini_train[i] <span class="op">=</span> clf_gini.score(X_train, Y_train)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    scores_entropy_test[i] <span class="op">=</span> clf_entropy.score(X_test, Y_test)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    scores_gini_test[i] <span class="op">=</span> clf_gini.score(X_test, Y_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Les courbes obtenues sont les suivantes :</p>
+<div class="cell" data-execution_count="18">
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-18-output-1.png" width="590" height="449"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="report_files/figure-html/cell-18-output-2.png" width="590" height="449"></p>
+</div>
+</div>
+<p>Cette fois encore, on constate que la classification ne dépasse pas les 80% de précision pour les données de test. Les courbes suggèrent également qu’une valeur de profondeur d’arbre de 6 ou 7 suffit pour classer efficacement les données.</p>
+<p>On enregistre l’arbre obtenu pour <code>max_depth = 6=7</code> (L’arbre qui minimise l’erreur pour l’échantillon d’entraînement est celui de profondeur 12, mais il peut être intéressant d’observer celui qui la minimise pour l’échantillon de test pour cette fois).</p>
+<p>Il est enregistré dans le dossier dist.</p>
+</section>
+</section>
+<section id="méthodes-de-choix-de-paramètres---sélection-de-modèle" class="level2">
+<h2 class="anchored" data-anchor-id="méthodes-de-choix-de-paramètres---sélection-de-modèle">Méthodes de choix de paramètres - Sélection de modèle</h2>
+<section id="question-7" class="level3">
+<h3 class="anchored" data-anchor-id="question-7">Question 7</h3>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

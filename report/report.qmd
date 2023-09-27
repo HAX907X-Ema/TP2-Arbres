@@ -1,6 +1,397 @@
 ---
-title: "Report"
-format: html
+title: "TP2 : Arbres"
+author:
+    - Ema Cerezo
+date: today
+format: 
+    html:
+      toc: true
+      toc-title: Table des matières
+      toc-location: left
+theme: flatly
 execute:
   cache: true
 ---
+
+```{python}
+#| echo: false
+import matplotlib.pyplot as plt
+import numpy as np
+import graphviz
+import os
+from sklearn import tree, datasets, model_selection
+
+from src.sample_generation import rand_checkers
+from src.display import frontiere, plot_2d
+
+plt.rcParams.update({'font.size': 10})
+
+np.random.seed(1)
+```
+
+## Classification avec les arbres
+
+### Question 1
+
+Dans le cadre de la régression, on cherche à prédire une valeur numérique pour
+Y, c'est-à-dire une valeur continue. Cela diffère de la prédiction d'une
+classe, qui correspond à une valeur discrète (ex: couleur des yeux, diagnostic
+médical...).
+
+Ainsi, les mesures d'impureté comme l'indice de Gini ou l'entropie
+ne sont pas pertinentes pour la classification : Il faut choisir une autre
+mesure d'homogénéité. On pourrait par exemple utiliser la variance, qui
+permettrait de s'assurer que les données soient bien regroupées.
+
+
+### Question 2
+
+On souhaite comparer les pourcentages d'erreurs commises selon la
+profondeur maximale d'un arbre pour les mesures d'impureté suivantes :
+
+ * Indice de Gini
+ * Entropie
+
+Pour ce faire, on procède de la manière suivante :
+
+ 1) Simulation de deux échantillons de données de taille n = 456, grâce à la
+  méthode `rand_checkers`, pour obtenir un ensemble de points aléatoires.
+
+ 2) Pour chaque mesure d'impureté, construction de 12 arbres de décision et
+ classification des données avec le package `tree` de `scikit-learn` (en 
+ faisant varier le paramètre `max_depth` de `tree.DecisionTreeClassifier`
+ entre 1 et 12).
+
+ 3) Attribution d'un score à chaque résultat obtenu.
+
+ 4) Construction de deux courbes à analyser : Une pour l'indice de Gini et une
+  pour l'entropie.
+
+**1. Génération des échantillons**
+
+```{python}
+# Génération des échantillons
+n = 114  # 456 = 114 * 4
+data_raw = rand_checkers(n, n, n, n)
+X_train = data_raw[:, :2]
+Y_train = data_raw[:, 2].astype(int)
+```
+
+```{python}
+#|echo: false
+plt.ion()
+plt.figure(figsize=(30, 20))
+plt.subplot(456)
+plt.title('Echantillon généré avec rand_checkers')
+plot_2d(X_train, Y_train, w=None)
+plt.show()
+```
+
+**2. 3. Instanciation des classifiers, entraînement et calcul des scores**
+
+```{python}
+# Instanciation et entraînement des classifiers
+max_depth = 12
+scores_entropy = np.zeros(max_depth)
+scores_gini = np.zeros(max_depth)
+
+clf_entropy = []  # (<- pour des raisons d'affichage, et parce qu'on va les)
+clf_gini = []     # (réutiliser question 5.)
+for i in range(max_depth):
+    clf_entropy.append(tree.DecisionTreeClassifier(criterion="entropy", 
+    max_depth=i + 1))
+    clf_entropy[i].fit(X_train, Y_train)
+    scores_entropy[i] = clf_entropy[i].score(X_train, Y_train)  # Calcul du score
+    
+    clf_gini.append(tree.DecisionTreeClassifier(criterion="gini", 
+    max_depth=i + 1))
+    clf_gini[i].fit(X_train, Y_train)
+    scores_gini[i] = clf_gini[i].score(X_train, Y_train)
+```
+
+Voici les classes obtenues pour les valeurs 1 à 12 du paramètre 
+`max_depth` pour `DecisionTreeClassifier(criterion="entropy")` :
+
+```{python}
+#| echo: false
+for i in range(max_depth):
+    plt.subplot(3, 4, i + 1)
+    plt.title(f'max_depth = {i+1}', {'fontsize': 8})
+    frontiere(lambda x: clf_entropy[i].predict(x.reshape((1, -1))), X_train, 
+    Y_train, step=50, samples=False)
+plt.draw()
+plt.show()
+```
+
+On constate qu'une profondeur d'arbre trop petite ne permet pas de 
+distinguer des classes pertinentes dans l'échantillon *(max_depth = 1 à 5)*, 
+tandis qu'une profondeur d'arbre trop grande semble capturer du bruit en plus de 
+l'information de l'échantillon *(max_depth = 8 à 12)* (surapprentissage).
+
+
+**4. Courbes de score**
+
+Le score donne la proportion de prédictions correctement réalisées par le 
+classifier. Ainsi, plus le score est petit, plus le pourcentage d'erreur 
+est grand.
+
+Les scores calculés précédemment donnent les courbes suivantes :
+
+```{python}
+#| echo : false
+plt.figure()
+plt.plot(list(range(1, 13)), scores_entropy, color="blue", label="Entropy")
+plt.plot(list(range(1, 13)), scores_gini, color="red", label="Gini") 
+plt.xlabel('Max depth')
+plt.ylabel('Score de précision')
+plt.legend()
+plt.draw()
+```
+```{python}
+#| echo : false
+print(f'Score entropy pour max_depth = 5 : {scores_entropy[4]}\nScore\
+ entropy pour max_depth = 7 : {scores_entropy[6]}\nScore entropy pour\
+ max_depth = 8 : {scores_entropy[7]}\nScore entropy pour\
+ max_depth = 10 : {scores_entropy[9]}\nScore entropy pour\
+ max_depth = 12 : {scores_entropy[11]}')
+```
+
+Comme constaté précédemment, on remarque que pour une profondeur d'arbre 
+inférieure ou égale à 5, la prédiction est peu fiable (environ une chance sur 
+deux ou moins). Au-dessus de 8, la prédiction est précise à 95%. On 
+remarque aussi que pour `max_depth = 12`, la prédiction est fiable à 100%, 
+ce qui signifie que tout le bruit a été capturé par le modèle. Cela confirme 
+donc notre hypothèse de surapprentissage pour une valeur trop élevée de 
+profondeur d'arbre.
+
+Les mesures d'impureté d'entropie et de Gini donnent des résultats similaires.
+
+### Question 3
+
+La profondeur qui minimise le pourcentage d'erreurs est celle qui 
+a obtenu le score maximal :
+
+```{python}
+score_max, indice_max = scores_entropy[0], 0
+for i, score in enumerate(scores_entropy):
+    if score > score_max:
+        score_max = score
+        indice_max = i
+         
+print(f'Score entropy pour max_depth = {indice_max + 1} : {score_max}')
+```
+
+Soit donc `max_depth = 12` (on le remarque également question précédente).
+
+La classification associée est la suivante :
+
+```{python}
+#| echo : false
+plt.figure()
+plt.title('Classification avec max_depth = 12')
+
+frontiere(lambda x: clf_entropy[11].predict(x.reshape((1, -1))), X_train, 
+          Y_train, step=100)
+plt.draw()
+plt.show()
+```
+
+### Question 4
+
+On exporte l'arbre maximal au format pdf.
+
+```{python}
+entropy_tree_graphviz = tree.export_graphviz(clf_entropy[11], out_file=None,
+                                             filled=True, rounded=True, 
+                                             special_characters=True) 
+graph = graphviz.Source(entropy_tree_graphviz)
+output_file = graph.render(os.path.join("..", "dist", "entropy_max_tree"))
+```
+
+```{python}
+#| echo: false
+os.remove(os.path.join("..", "dist", "entropy_max_tree"))
+```
+
+On obtient la représentation graphique de l'arbre avec ses règles de décision.
+
+### Question 5
+
+On génère un nouvel échantillon de taille $n = 160 = 40 + 40 + 40 + 40$ 
+avec la méthode `rand_checkers`, et on tente d'en classifier les données
+avec les arbres entraînés précédemment pour des profondeurs d'arbres maximales
+allant de 1 à 12 (par entropie et par indice de gini). On calcule ensuite les 
+scores obtenus pour les 2 * 12 classifications, et on trace deux courbes 
+pour comparer ces résultats à ceux obtenus auparavant. 
+
+```{python}
+#| echo: false
+n = 40
+max_depth = 12
+
+data_test = rand_checkers(n, n, n, n)
+X_test = data_test[:, :2]
+Y_test = data_test[:, 2].astype(int)
+
+scores_entropy = np.zeros(max_depth)
+scores_gini = np.zeros(max_depth)
+
+for i in range(max_depth):
+    scores_entropy[i] = clf_entropy[i].score(X_test, Y_test)
+    scores_gini[i] = clf_gini[i].score(X_test, Y_test)
+    
+plt.figure()
+plt.plot(list(range(1, 13)), scores_entropy, color="blue", label="Entropy")
+plt.plot(list(range(1, 13)), scores_gini, color="red", label="Gini") 
+plt.xlabel('Max depth')
+plt.ylabel('Score de précision')
+plt.title('Scores de précision pour le nouvel échantillon')
+plt.legend()
+plt.draw()
+plt.show()
+```
+
+Précédemment, on a constaté qu'une profondeur d'arbre maximale inférieure ou 
+égale à 5 ne permettait pas de classer correctement les données. Ici, on 
+constate qu'au dela de 6, la classification ne s'améliore plus en augmentant la 
+profondeur d'arbre, quel que soit le critère d'impureté (son score de 
+précision stagne aux alentours de 80%). On en déduit qu'une profondeur 
+d'arbre supérieure à 6 n'est pas pertinente pour la classification de ces 
+données (surapprentissage). 
+
+On remarque également que contrairement à la classification réalisée sur 
+l'échantillon d'entraînement, celle réalisée sur l'échantillon de test 
+n'arrive jamais à un score de 100% de précision quelle que soit la 
+profondeur d'arbre maximale (ce qui semble cohérent puisque le score est 
+calculé à partir d'une prédiction réalisée automatiquement sur les données 
+d'entrée).
+
+Voici les classes obtenues pour le critère d'entropie :
+
+```{python}
+#| echo: false
+for i in range(max_depth):
+    plt.subplot(3, 4, i + 1)
+    plt.title(f'max_depth = {i+1}', {'fontsize': 8})
+    frontiere(lambda x: clf_entropy[i].predict(x.reshape((1, -1))), X_test, 
+    Y_test, step=50, samples=False)
+plt.draw()
+plt.show()
+```
+
+En particulier, voici celles obtenues pour `max_depth = 6` :
+
+```{python}
+#| echo: false
+plt.figure()
+plt.title('Classification avec max_depth = 6')
+frontiere(lambda x: clf_entropy[5].predict(x.reshape((1, -1))), X_test, 
+          Y_test, step=100)
+plt.draw()
+plt.show()
+```
+
+La prédiction semble plutôt juste.
+
+
+### Question 6
+
+Il s'agit maintenant de reprendre les questions précédentes pour un jeu de 
+données réelles et non plus simulées. On commence par charger le jeu de 
+données.
+
+Il s'agit d'images de 8x8 pixels représentant des chiffres en noir et blanc,
+stockés sous forme de matrices :
+
+```{python}
+#|echo: false
+digits = datasets.load_digits()
+_, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
+for ax, image, label in zip(axes, digits.images, digits.target):
+    ax.set_axis_off()
+    ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
+    ax.set_title("%i" % label)
+```
+
+On entraîne des classifiers sur une partie des données du dataset (80% des 
+données) et on teste les classifiers sur les 20% restants. On trace ensuite 
+les courbes de score pour les données d'entraînement, et pour les données 
+de test.
+
+```{python}
+n_samples = len(digits.images)
+data = digits.images.reshape((n_samples, -1))
+X_train, X_test, Y_train, Y_test = model_selection.train_test_split(
+    data, digits.target, test_size=0.2, shuffle=False
+)
+
+scores_entropy_train = np.zeros(max_depth)
+scores_gini_train = np.zeros(max_depth)
+scores_entropy_test = np.zeros(max_depth)
+scores_gini_test = np.zeros(max_depth)
+
+for i in range(max_depth):
+    clf_entropy = tree.DecisionTreeClassifier(criterion="entropy", max_depth=i + 1)
+    clf_gini = tree.DecisionTreeClassifier(criterion="gini", max_depth=i + 1)
+    
+    clf_entropy.fit(X_train, Y_train)
+    clf_gini.fit(X_train, Y_train)
+    
+    scores_entropy_train[i] = clf_entropy.score(X_train, Y_train)
+    scores_gini_train[i] = clf_gini.score(X_train, Y_train)
+    scores_entropy_test[i] = clf_entropy.score(X_test, Y_test)
+    scores_gini_test[i] = clf_gini.score(X_test, Y_test)
+```
+
+Les courbes obtenues sont les suivantes :
+
+```{python}
+#|echo: false
+plt.figure()
+plt.plot(list(range(1, 13)), scores_entropy_train, color="blue", label="Entropy")
+plt.plot(list(range(1, 13)), scores_gini_train, color="red", label="Gini") 
+plt.title("Scores des données d'entraînement")
+plt.xlabel('Max depth')
+plt.ylabel('Score de précision')
+plt.legend()
+plt.draw()
+plt.show()
+
+plt.figure()
+plt.plot(list(range(1, 13)), scores_entropy_test, color="blue", 
+label="Entropy")
+plt.plot(list(range(1, 13)), scores_gini_test, color="red", label="Gini") 
+plt.title("Scores des données de test")
+plt.xlabel('Max depth')
+plt.ylabel('Score de précision')
+plt.legend()
+plt.draw()
+plt.show()
+```
+
+Cette fois encore, on constate que la classification ne dépasse pas les 80% 
+de précision pour les données de test. Les courbes suggèrent également 
+qu'une valeur de profondeur d'arbre de 6 ou 7 suffit pour classer 
+efficacement les données.
+
+On enregistre l'arbre obtenu pour `max_depth = 6=7` (L'arbre qui minimise 
+l'erreur pour l'échantillon d'entraînement est celui de profondeur 12, mais 
+il peut être intéressant d'observer celui qui la minimise pour 
+l'échantillon de test pour cette fois).
+
+```{python}
+#|echo: false
+clf_entropy = tree.DecisionTreeClassifier(criterion="entropy", max_depth=7)
+clf_entropy.fit(X_train, Y_train)
+entropy_tree_graphviz = tree.export_graphviz(clf_entropy, out_file=None,
+                                             filled=True, rounded=True, 
+                                             special_characters=True) 
+graph = graphviz.Source(entropy_tree_graphviz)
+output_file = graph.render(os.path.join("..", "dist", "digits_max_depth_7"))
+```
+
+Il est enregistré dans le dossier dist.
+
+## Méthodes de choix de paramètres - Sélection de modèle
+
+### Question 7
