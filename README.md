@@ -6,10 +6,14 @@ Ce projet contient le travail réalisé pour le TP2 : Arbres du module HAX907X. 
 
 ## Bien démarrer
 
-**Pour exécuter le script:**
+1. Assurez-vous que Python et Quarto soient bien installés sur votre ordinateur.
+2. Ouvrez un terminal à la racine de votre projet et installez les librairies via la commande :
 
-1. Assurez-vous que Quarto soit bien installé sur votre ordinateur.
-2. Selon votre système d'exploitation, suivez les étapes ci-dessous :
+```
+pip install requirements.txt
+```
+   
+3. Selon votre système d'exploitation, suivez les étapes ci-dessous :
 
 ### Windows
 
