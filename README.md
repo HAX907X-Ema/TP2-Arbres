@@ -29,7 +29,7 @@ Si vous souhaitez lire le script report.qmd, celui-ci se situe dans le dossier `
 
 ### Linux / MacOS
 
-Ouvrez un terminal à la racine du projet exécutez les commandes suivantes :
+Ouvrez un terminal à la racine du projet et exécutez les commandes suivantes :
 
 ```
 pip3 install virtualenv
